@@ -27,4 +27,181 @@ h1 {
 }
 
 .hp {
-  heigh
+  height: 100%;
+  background: #22c55e;
+}
+
+.enemy {
+  background: #ef4444;
+}
+
+button {
+  margin: 5px;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.log {
+  margin-top: 20px;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+  background: #1e293b;
+  padding: 10px;
+  border-radius: 10px;
+  height: 150px;
+  overflow-y: auto;
+  text-align: left;
+}
+</style>
+
+</head>
+
+<body>
+
+<h1>Gojo vs Sukuna</h1>
+
+<h2>Gojo HP</h2>
+<div class="bar"><div id="gojoHP" class="hp"></div></div>
+
+<h2>Sukuna HP</h2>
+<div class="bar"><div id="sukunaHP" class="hp enemy"></div></div>
+
+<div>
+  <button onclick="playerMove('Blue')">Blue (30)</button>
+  <button onclick="playerMove('Red')">Red (40)</button>
+  <button onclick="playerMove('Purple')">Purple (60)</button>
+  <button onclick="playerMove('Punch')">Punch (15)</button>
+  <button onclick="domain()">Unlimited Void (Domain)</button>
+</div>
+
+<div class="log" id="log"></div>
+
+<script>
+
+let gojo = { hp: 200, max: 200, domainReady: true };
+let sukuna = { hp: 250, max: 250, domainReady: true };
+
+function updateBars() {
+  document.getElementById("gojoHP").style.width = (gojo.hp/gojo.max)*100 + "%";
+  document.getElementById("sukunaHP").style.width = (sukuna.hp/sukuna.max)*100 + "%";
+}
+
+function log(text) {
+  const logBox = document.getElementById("log");
+  logBox.innerHTML += "<div>" + text + "</div>";
+  logBox.scrollTop = logBox.scrollHeight;
+}
+
+function playerMove(move) {
+  if (gojo.hp <= 0 || sukuna.hp <= 0) return;
+
+  let dmg = 0;
+
+  if (move === "Blue") dmg = 30;
+  if (move === "Red") dmg = 40;
+  if (move === "Purple") dmg = 60;
+  if (move === "Punch") dmg = 15;
+
+  applyDamageToSukuna(move, dmg);
+}
+
+function domain() {
+  if (!gojo.domainReady) {
+    log("Gojo's domain is not ready yet.");
+    return;
+  }
+
+  let dmg = 100;
+  sukuna.hp -= dmg;
+  log("Gojo used Unlimited Void for " + dmg + " damage!");
+
+  gojo.domainReady = false;
+
+  if (sukuna.hp <= 0) {
+    sukuna.hp = 0;
+    updateBars();
+    log("Sukuna defeated.");
+    return;
+  }
+
+  enemyTurn();
+  updateBars();
+}
+
+function applyDamageToSukuna(move, dmg) {
+  let chance = Math.random();
+
+  if (chance < 0.2) {
+    log("Sukuna evaded the attack.");
+    dmg = 0;
+  } else if (chance < 0.4) {
+    log("Sukuna blocked most of it.");
+    dmg *= 0.5;
+  } else if (chance < 0.6) {
+    log("Sukuna tanked it (-20%).");
+    dmg *= 0.8;
+  }
+
+  dmg = Math.round(dmg);
+  sukuna.hp -= dmg;
+
+  log("Gojo used " + move + " for " + dmg + " damage.");
+
+  if (sukuna.hp <= 0) {
+    sukuna.hp = 0;
+    updateBars();
+    log("Sukuna defeated.");
+    return;
+  }
+
+  enemyTurn();
+  updateBars();
+}
+
+function enemyTurn() {
+  if (gojo.hp <= 0) return;
+
+  let moves = [
+    { name: "Slash", dmg: 25 },
+    { name: "Cleave", dmg: 35 },
+    { name: "Dismantle", dmg: 30 },
+    { name: "Heavy Strike", dmg: 40 }
+  ];
+
+  let useDomain = Math.random() < 0.2 && sukuna.domainReady;
+
+  if (useDomain) {
+    let dmg = 90;
+    gojo.hp -= dmg;
+    sukuna.domainReady = false;
+    log("Sukuna used Malevolent Shrine for " + dmg + " damage.");
+  } else {
+    let move = moves[Math.floor(Math.random() * moves.length)];
+    let dmg = move.dmg;
+
+    if (Math.random() < 0.2) {
+      log("Gojo dodged the attack.");
+      dmg = 0;
+    }
+
+    gojo.hp -= dmg;
+    log("Sukuna used " + move.name + " for " + dmg + " damage.");
+  }
+
+  if (gojo.hp <= 0) {
+    gojo.hp = 0;
+    updateBars();
+    log("Gojo defeated.");
+  }
+}
+
+updateBars();
+
+</script>
+
+</body>
+</html>
