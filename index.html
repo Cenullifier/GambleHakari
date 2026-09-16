@@ -1,151 +1,171 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Cenull Trading</title>
+<title>Cenull Battle</title>
 
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    background: #0f172a;
-    color: white;
-    text-align: center;
-    margin: 0;
-  }
+body {
+  font-family: Arial, sans-serif;
+  background: #0f172a;
+  color: white;
+  text-align: center;
+}
 
-  h1 {
-    margin: 20px;
-    font-size: 2.5em;
-  }
+h1 {
+  margin: 20px;
+}
 
-  .stats {
-    margin: 10px;
-    font-size: 1.1em;
-  }
+.bar {
+  width: 300px;
+  height: 20px;
+  background: #333;
+  margin: 10px auto;
+  border-radius: 10px;
+  overflow: hidden;
+}
 
-  .market {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
+.hp {
+  height: 100%;
+  background: #22c55e;
+}
 
-  .card {
-    background: #1e293b;
-    padding: 15px;
-    margin: 10px;
-    border-radius: 10px;
-    width: 200px;
-  }
+.enemy { background: #ef4444; }
 
-  button {
-    margin: 5px;
-    padding: 8px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-  }
+button {
+  margin: 5px;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
 
-  .buy { background: #22c55e; }
-  .sell { background: #ef4444; }
-
-  .pos { color: #22c55e; }
-  .neg { color: #ef4444; }
+.log {
+  margin-top: 20px;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+  background: #1e293b;
+  padding: 10px;
+  border-radius: 10px;
+  height: 150px;
+  overflow-y: auto;
+  text-align: left;
+}
 </style>
+
 </head>
 
 <body>
 
-<h1>📈 Cenull Trading</h1>
+<h1>⚔️ Gojo vs Sukuna</h1>
 
-<div class="stats" id="balance">Balance: $1000</div>
-<div class="stats" id="portfolio">Portfolio Value: $0</div>
-<div class="stats" id="networth">Net Worth: $1000</div>
+<h2>Gojo HP</h2>
+<div class="bar"><div id="gojoHP" class="hp"></div></div>
 
-<div class="market" id="market"></div>
+<h2>Sukuna HP</h2>
+<div class="bar"><div id="sukunaHP" class="hp enemy"></div></div>
+
+<div>
+  <button onclick="playerMove('Blue')">Blue (30 dmg)</button>
+  <button onclick="playerMove('Red')">Red (40 dmg)</button>
+  <button onclick="playerMove('Purple')">Hollow Purple (60 dmg)</button>
+  <button onclick="playerMove('Punch')">Punch (15 dmg)</button>
+</div>
+
+<div class="log" id="log"></div>
 
 <script>
 
-let balance = 1000;
+let gojo = { hp: 200, max: 200 };
+let sukuna = { hp: 250, max: 250 };
 
-let assets = [
-  { name: "Bitcoin", price: 30000, owned: 0, base: 30000 },
-  { name: "Ethereum", price: 2000, owned: 0, base: 2000 },
-  { name: "Gold", price: 1800, owned: 0, base: 1800 },
-  { name: "Oil", price: 70, owned: 0, base: 70 }
-];
-
-function getPortfolioValue() {
-  let total = 0;
-  assets.forEach(a => {
-    total += a.price * a.owned;
-  });
-  return total;
+function updateBars() {
+  document.getElementById("gojoHP").style.width = (gojo.hp/gojo.max)*100 + "%";
+  document.getElementById("sukunaHP").style.width = (sukuna.hp/sukuna.max)*100 + "%";
 }
 
-function render() {
-  let portfolio = getPortfolioValue();
-  let networth = balance + portfolio;
-
-  document.getElementById("balance").innerText = "Balance: $" + balance;
-  document.getElementById("portfolio").innerText = "Portfolio Value: $" + portfolio;
-
-  document.getElementById("networth").innerHTML =
-    "Net Worth: $" + networth +
-    (networth >= 1000 ? " <span class='pos'>(+" + (networth - 1000) + ")</span>"
-                      : " <span class='neg'>(" + (networth - 1000) + ")</span>");
-
-  const market = document.getElementById("market");
-  market.innerHTML = "";
-
-  assets.forEach((a, i) => {
-    let change = a.price - a.base;
-    let color = change >= 0 ? "pos" : "neg";
-
-    market.innerHTML += `
-      <div class="card">
-        <h3>${a.name}</h3>
-        <p>Price: $${a.price}</p>
-        <p>Change: <span class="${color}">${change}</span></p>
-        <p>Owned: ${a.owned}</p>
-        <button class="buy" onclick="buy(${i})">Buy</button>
-        <button class="sell" onclick="sell(${i})">Sell</button>
-      </div>
-    `;
-  });
+function log(text) {
+  const logBox = document.getElementById("log");
+  logBox.innerHTML += "<div>" + text + "</div>";
+  logBox.scrollTop = logBox.scrollHeight;
 }
 
-function buy(i) {
-  if (balance >= assets[i].price) {
-    balance -= assets[i].price;
-    assets[i].owned++;
-    render();
-  } else {
-    alert("Not enough money");
+function playerMove(move) {
+  if (gojo.hp <= 0 || sukuna.hp <= 0) return;
+
+  let dmg = 0;
+
+  if (move === "Blue") dmg = 30;
+  if (move === "Red") dmg = 40;
+  if (move === "Purple") dmg = 60;
+  if (move === "Punch") dmg = 15;
+
+  // Sukuna defense system
+  let chance = Math.random();
+
+  if (chance < 0.2) {
+    log("Sukuna EVADED the attack!");
+    dmg = 0;
+  } else if (chance < 0.4) {
+    log("Sukuna BLOCKED most of it!");
+    dmg *= 0.5;
+  } else if (chance < 0.6) {
+    log("Sukuna TANKED it (-20%)");
+    dmg *= 0.8;
+  }
+
+  dmg = Math.round(dmg);
+  sukuna.hp -= dmg;
+
+  log("Gojo used " + move + " for " + dmg + " damage!");
+
+  if (sukuna.hp <= 0) {
+    sukuna.hp = 0;
+    updateBars();
+    log("🔥 Sukuna defeated!");
+    return;
+  }
+
+  enemyTurn();
+  updateBars();
+}
+
+function enemyTurn() {
+  let moves = [
+    { name: "Slash", dmg: 25 },
+    { name: "Cleave", dmg: 35 },
+    { name: "Dismantle", dmg: 30 },
+    { name: "Domain Hit", dmg: 45 }
+  ];
+
+  let move = moves[Math.floor(Math.random() * moves.length)];
+
+  let dmg = move.dmg;
+
+  // Gojo dodge chance
+  if (Math.random() < 0.2) {
+    log("Gojo dodged the attack!");
+    dmg = 0;
+  }
+
+  gojo.hp -= dmg;
+
+  log("Sukuna used " + move.name + " for " + dmg + " damage!");
+
+  if (gojo.hp <= 0) {
+    gojo.hp = 0;
+    updateBars();
+    log("💀 Gojo defeated!");
   }
 }
 
-function sell(i) {
-  if (assets[i].owned > 0) {
-    balance += assets[i].price;
-    assets[i].owned--;
-    render();
-  }
-}
-
-// live price system
-setInterval(() => {
-  assets.forEach(a => {
-    let change = (Math.random() - 0.5) * 120;
-    a.price = Math.max(1, Math.round(a.price + change));
-  });
-
-  render();
-}, 2000);
-
-render();
+updateBars();
 
 </script>
 
 </body>
 </html>
+
