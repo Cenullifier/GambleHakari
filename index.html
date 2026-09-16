@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Cenull Trading</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #0f172a;
+    color: white;
+    text-align: center;
+    margin: 0;
+  }
+
+  h1 {
+    margin: 20px;
+    font-size: 2.5em;
+  }
+
+  .stats {
+    margin: 10px;
+    font-size: 1.1em;
+  }
+
+  .market {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .card {
+    background: #1e293b;
+    padding: 15px;
+    margin: 10px;
+    border-radius: 10px;
+    width: 200px;
+  }
+
+  button {
+    margin: 5px;
+    padding: 8px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  .buy { background: #22c55e; }
+  .sell { background: #ef4444; }
+
+  .pos { color: #22c55e; }
+  .neg { color: #ef4444; }
+</style>
+</head>
+
+<body>
+
+<h1>📈 Cenull Trading</h1>
+
+<div class="stats" id="balance">Balance: $1000</div>
+<div class="stats" id="portfolio">Portfolio Value: $0</div>
+<div class="stats" id="networth">Net Worth: $1000</div>
+
+<div class="market" id="market"></div>
+
+<script>
+
+let balance = 1000;
+
+let assets = [
+  { name: "Bitcoin", price: 30000, owned: 0, base: 30000 },
+  { name: "Ethereum", price: 2000, owned: 0, base: 2000 },
+  { name: "Gold", price: 1800, owned: 0, base: 1800 },
+  { name: "Oil", price: 70, owned: 0, base: 70 }
+];
+
+function getPortfolioValue() {
+  let total = 0;
+  assets.forEach(a => {
+    total += a.price * a.owned;
+  });
+  return total;
+}
+
+function render() {
+  let portfolio = getPortfolioValue();
+  let networth = balance + portfolio;
+
+  document.getElementById("balance").innerText = "Balance: $" + balance;
+  document.getElementById("portfolio").innerText = "Portfolio Value: $" + portfolio;
+
+  document.getElementById("networth").innerHTML =
+    "Net Worth: $" + networth +
+    (networth >= 1000 ? " <span class='pos'>(+" + (networth - 1000) + ")</span>"
+                      : " <span class='neg'>(" + (networth - 1000) + ")</span>");
+
+  const market = document.getElementById("market");
+  market.innerHTML = "";
+
+  assets.forEach((a, i) => {
+    let change = a.price - a.base;
+    let color = change >= 0 ? "pos" : "neg";
+
+    market.innerHTML += `
+      <div class="card">
+        <h3>${a.name}</h3>
+        <p>Price: $${a.price}</p>
+        <p>Change: <span class="${color}">${change}</span></p>
+        <p>Owned: ${a.owned}</p>
+        <button class="buy" onclick="buy(${i})">Buy</button>
+        <button class="sell" onclick="sell(${i})">Sell</button>
+      </div>
+    `;
+  });
+}
+
+function buy(i) {
+  if (balance >= assets[i].price) {
+    balance -= assets[i].price;
+    assets[i].owned++;
+    render();
+  } else {
+    alert("Not enough money");
+  }
+}
+
+function sell(i) {
+  if (assets[i].owned > 0) {
+    balance += assets[i].price;
+    assets[i].owned--;
+    render();
+  }
+}
+
+// live price system
+setInterval(() => {
+  assets.forEach(a => {
+    let change = (Math.random() - 0.5) * 120;
+    a.price = Math.max(1, Math.round(a.price + change));
+  });
+
+  render();
+}, 2000);
+
+render();
+
+</script>
+
+</body>
+</html>
