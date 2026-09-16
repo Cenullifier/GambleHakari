@@ -1,462 +1,923 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Gojo vs Sukuna Battle</title>
 
+
 <style>
+
+/* =========================================
+   GENERAL
+========================================= */
+
 * {
     box-sizing: border-box;
 }
 
 body {
+
     margin: 0;
+
     padding: 20px;
-    background: linear-gradient(135deg, #0f172a, #111827);
+
+    background:
+        radial-gradient(circle at top, #1e1b4b, #0f172a 55%, #020617);
+
     color: white;
+
     font-family: Arial, sans-serif;
+
     text-align: center;
+
     min-height: 100vh;
+
+    overflow-x: hidden;
 }
+
 
 h1 {
-    font-size: 38px;
-    margin: 8px 0 24px;
-    text-shadow: 0 0 15px #7c3aed;
+
+    font-size: 40px;
+
+    margin: 10px 0 25px;
+
+    text-shadow:
+        0 0 10px #7c3aed,
+        0 0 25px #7c3aed;
 }
+
 
 h2 {
-    margin: 8px 0 4px;
+
+    margin: 10px 0 5px;
+
 }
 
+
+/* =========================================
+   HP BARS
+========================================= */
+
 .bar {
-    width: 360px;
+
+    width: 380px;
+
     max-width: 90%;
-    height: 26px;
+
+    height: 28px;
+
     margin: 8px auto 18px;
-    background: #292929;
+
+    background: #222;
+
     border: 2px solid #555;
+
     border-radius: 15px;
+
     overflow: hidden;
 }
 
+
 .hp {
+
     height: 100%;
+
     width: 100%;
-    transition: width .35s ease;
+
+    transition: width 0.35s ease;
 }
+
 
 .gojoHP {
-    background: #2563eb;
+
+    background:
+        linear-gradient(
+            90deg,
+            #1d4ed8,
+            #60a5fa
+        );
 }
+
 
 .sukunaHP {
-    background: #dc2626;
+
+    background:
+        linear-gradient(
+            90deg,
+            #991b1b,
+            #ef4444
+        );
 }
+
+
+/* =========================================
+   ATTACK BUTTONS
+========================================= */
 
 button {
+
     margin: 5px;
-    padding: 11px 16px;
-    border: 0;
+
+    padding: 12px 18px;
+
+    border: none;
+
     border-radius: 8px;
+
     cursor: pointer;
+
     color: white;
+
     font-weight: bold;
-    transition: .15s;
+
+    font-size: 14px;
+
+    transition:
+        transform 0.15s,
+        filter 0.15s;
 }
+
 
 button:hover:not(:disabled) {
+
     transform: scale(1.05);
-    filter: brightness(1.18);
+
+    filter: brightness(1.2);
 }
+
+
+button:active:not(:disabled) {
+
+    transform: scale(0.95);
+}
+
 
 button:disabled {
-    background: #555 !important;
-    color: #999;
+
+    background: #444 !important;
+
+    color: #888;
+
     cursor: not-allowed;
+
 }
 
+
 .blue {
+
     background: #2563eb;
 }
 
+
 .red {
+
     background: #dc2626;
 }
 
+
 .purple {
+
     background: #7c3aed;
 }
 
+
 .punch {
+
     background: #475569;
 }
 
+
 .domain {
+
     background: #581c87;
 }
 
+
 .restart {
+
     background: #16a34a;
+
     font-size: 17px;
+
+    padding: 12px 25px;
 }
 
-#purpleStatus,
-#cooldowns {
-    margin: 10px auto;
+
+/* =========================================
+   STATUS
+========================================= */
+
+#purpleStatus {
+
+    margin: 12px auto;
+
     color: #c4b5fd;
+
     font-size: 14px;
+
     max-width: 700px;
 }
 
-#log {
-    width: 600px;
-    max-width: 95%;
-    height: 180px;
-    margin: 20px auto;
-    padding: 12px;
-    background: #1e293b;
-    border: 1px solid #475569;
-    border-radius: 10px;
-    overflow-y: auto;
-    text-align: left;
+
+#cooldowns {
+
+    margin: 10px auto 15px;
+
+    color: #94a3b8;
+
+    font-size: 14px;
+
+    max-width: 800px;
 }
 
+
+/* =========================================
+   BATTLE LOG
+========================================= */
+
+#log {
+
+    width: 620px;
+
+    max-width: 95%;
+
+    height: 190px;
+
+    margin: 20px auto;
+
+    padding: 12px;
+
+    background: #1e293b;
+
+    border: 1px solid #475569;
+
+    border-radius: 10px;
+
+    overflow-y: auto;
+
+    text-align: left;
+
+    line-height: 1.5;
+}
+
+
 .gojoText {
+
     color: #60a5fa;
 }
 
+
 .sukunaText {
+
     color: #f87171;
 }
 
+
 .specialText {
+
     color: #c084fc;
 }
 
+
+/* =========================================
+   DAMAGE NUMBERS
+========================================= */
+
 .damage {
+
     position: fixed;
-    font-size: 30px;
+
+    font-size: 32px;
+
     font-weight: bold;
+
     pointer-events: none;
+
     z-index: 50;
-    animation: float .9s forwards;
+
+    animation:
+        damageFloat 0.9s forwards;
 }
 
-@keyframes float {
+
+@keyframes damageFloat {
 
     from {
+
         opacity: 1;
-        transform: translateY(0) scale(1);
+
+        transform:
+            translateY(0)
+            scale(1);
+
     }
 
     to {
+
         opacity: 0;
-        transform: translateY(-80px) scale(1.3);
+
+        transform:
+            translateY(-80px)
+            scale(1.3);
+
     }
+
 }
+
+
+/* =========================================
+   SCREEN SHAKE
+========================================= */
 
 .shake {
-    animation: shake .3s;
+
+    animation:
+        screenShake 0.3s;
 }
 
-@keyframes shake {
 
-    0%, 100% {
-        transform: translateX(0);
+@keyframes screenShake {
+
+    0%,
+    100% {
+
+        transform:
+            translateX(0);
+
     }
 
     25% {
-        transform: translateX(-8px);
+
+        transform:
+            translateX(-8px);
+
     }
 
     50% {
-        transform: translateX(8px);
+
+        transform:
+            translateX(8px);
+
     }
 
     75% {
-        transform: translateX(-6px);
+
+        transform:
+            translateX(-6px);
+
     }
+
 }
 
-/* DOMAIN CLASH */
+
+/* =========================================
+   OVERLAYS
+========================================= */
 
 .overlay {
+
     display: none;
+
     position: fixed;
+
     inset: 0;
-    background: rgba(0,0,0,.97);
+
+    background:
+        rgba(0, 0, 0, 0.97);
+
     z-index: 200;
+
     justify-content: center;
+
     align-items: center;
+
     flex-direction: column;
+
     padding: 20px;
 }
 
+
+/* =========================================
+   DOMAIN CLASH
+========================================= */
+
 #domainClash h1 {
-    font-size: 42px;
+
+    font-size: 45px;
+
+    color: #c084fc;
+
+    text-shadow:
+        0 0 15px #7c3aed,
+        0 0 35px #7c3aed;
 }
 
+
 .clashContainer {
-    width: 550px;
+
+    width: 600px;
+
     max-width: 90%;
 }
 
+
 .clashLabel {
+
     font-weight: bold;
-    margin-top: 12px;
+
+    margin-top: 15px;
+
+    font-size: 18px;
 }
+
 
 .clashBar {
-    height: 30px;
+
     width: 100%;
+
+    height: 32px;
+
     background: #333;
-    border-radius: 15px;
+
+    border-radius: 20px;
+
     overflow: hidden;
+
     margin: 7px 0 18px;
+
+    border: 2px solid #555;
 }
+
 
 .clashFill {
+
     height: 100%;
-    width: 0;
-    transition: width .06s linear;
+
+    width: 0%;
+
+    transition:
+        width 0.05s linear;
 }
+
 
 #gojoClashBar {
-    background: #2563eb;
+
+    background:
+        linear-gradient(
+            90deg,
+            #1d4ed8,
+            #60a5fa
+        );
 }
+
 
 #sukunaClashBar {
-    background: #dc2626;
+
+    background:
+        linear-gradient(
+            90deg,
+            #991b1b,
+            #ef4444
+        );
 }
+
 
 #clashTimer {
-    font-size: 36px;
+
+    font-size: 42px;
+
     font-weight: bold;
-    margin: 12px;
+
+    margin: 10px;
 }
+
 
 #spaceText {
+
     font-size: 20px;
-    margin: 15px 0;
-    max-width: 650px;
+
+    font-weight: bold;
+
+    max-width: 700px;
+
+    margin: 15px auto;
 }
 
+
 .small {
+
     font-size: 13px;
+
     color: #94a3b8;
+
     margin-top: 12px;
 }
 
-/* WIN SCREEN */
 
-#winnerText {
-    font-size: 50px;
+/* =========================================
+   WIN SCREEN
+========================================= */
+
+#winScreen {
+
+    display: none;
+
+    position: fixed;
+
+    inset: 0;
+
+    background:
+        rgba(0, 0, 0, 0.98);
+
+    z-index: 500;
+
+    justify-content: center;
+
+    align-items: center;
+
+    flex-direction: column;
+
+    padding: 20px;
+}
+
+
+#winnerImg {
+
+    display: none;
+
+    width: 800px;
+
+    max-width: 92vw;
+
+    max-height: 75vh;
+
+    object-fit: contain;
+
+    border-radius: 12px;
+
+    border: 3px solid #8b5cf6;
+
+    box-shadow:
+        0 0 20px #8b5cf6,
+        0 0 50px #7c3aed;
+
     margin-bottom: 20px;
 }
 
-#winnerImg {
+
+/*
+   This is ONLY shown if the browser
+   cannot find the image file.
+*/
+
+#imageError {
+
     display: none;
-    width: 700px;
-    max-width: 92vw;
-    max-height: 65vh;
-    object-fit: contain;
-    border-radius: 12px;
-    border: 3px solid #8b5cf6;
-    box-shadow: 0 0 30px #8b5cf6;
+
+    color: #f87171;
+
+    font-size: 18px;
+
+    margin-bottom: 20px;
+
+    max-width: 600px;
+
 }
 
-#imageFallback {
-    display: none;
-    width: 500px;
-    max-width: 90vw;
-    height: 260px;
-    align-items: center;
-    justify-content: center;
-    background: #1e293b;
-    border: 3px solid #8b5cf6;
-    border-radius: 12px;
-    font-size: 30px;
-}
+
 </style>
+
 </head>
+
 
 <body>
 
+
 <h1>GOJO VS SUKUNA</h1>
+
+
+<!-- =====================================
+     GOJO HP
+====================================== -->
 
 <h2>Gojo HP</h2>
 
 <div class="bar">
-    <div id="gojoHP" class="hp gojoHP"></div>
+
+    <div
+        id="gojoHP"
+        class="hp gojoHP">
+    </div>
+
 </div>
+
+
+<!-- =====================================
+     SUKUNA HP
+====================================== -->
 
 <h2>Sukuna HP</h2>
 
 <div class="bar">
-    <div id="sukunaHP" class="hp sukunaHP"></div>
+
+    <div
+        id="sukunaHP"
+        class="hp sukunaHP">
+    </div>
+
 </div>
+
+
+<!-- =====================================
+     ATTACK BUTTONS
+====================================== -->
 
 <div>
 
-    <button class="blue" onclick="attack('Blue')">
+    <button
+        class="blue"
+        onclick="attack('Blue')">
+
         Blue
+
     </button>
 
-    <button class="red" onclick="attack('Red')">
+
+    <button
+        class="red"
+        onclick="attack('Red')">
+
         Red
+
     </button>
+
 
     <button
         class="purple"
         id="purpleButton"
         onclick="attack('Purple')">
+
         Hollow Purple
+
     </button>
 
-    <button class="punch" onclick="attack('Punch')">
+
+    <button
+        class="punch"
+        onclick="attack('Punch')">
+
         Punch
+
     </button>
+
 
     <button
         class="domain"
         id="domainButton"
         onclick="gojoDomain()">
+
         Unlimited Void
+
     </button>
 
 </div>
 
+
 <div id="purpleStatus"></div>
 
+
 <div id="cooldowns"></div>
+
 
 <div id="log"></div>
 
 
-<!-- DOMAIN CLASH -->
+<!-- =====================================
+     DOMAIN CLASH SCREEN
+====================================== -->
 
-<div id="domainClash" class="overlay">
+<div
+    id="domainClash"
+    class="overlay">
 
-    <h1>DOMAIN CLASH</h1>
+
+    <h1>
+        DOMAIN CLASH
+    </h1>
+
 
     <div id="clashTimer">
         5
     </div>
 
+
     <div class="clashContainer">
+
 
         <div class="clashLabel">
             GOJO
         </div>
 
+
         <div class="clashBar">
+
             <div
                 id="gojoClashBar"
                 class="clashFill">
             </div>
+
         </div>
+
 
         <div class="clashLabel">
             SUKUNA
         </div>
 
+
         <div class="clashBar">
+
             <div
                 id="sukunaClashBar"
                 class="clashFill">
             </div>
+
         </div>
 
+
     </div>
+
 
     <div id="spaceText">
-        PRESS SPACE REPEATEDLY TO FILL GOJO'S BAR.
-        SUKUNA WILL FIGHT BACK.
+
+        PRESS SPACE REPEATEDLY
+        TO FILL GOJO'S BAR
+
     </div>
 
+
     <div class="small">
-        The clash ends when the timer reaches zero
-        or one side reaches 100%.
+
+        Sukuna's AI is also fighting
+        to win the domain clash.
+
     </div>
+
 
 </div>
 
 
-<!-- WIN SCREEN -->
+<!-- =====================================
+     WIN SCREEN
+====================================== -->
 
-<div id="winScreen" class="overlay">
+<div
+    id="winScreen"
+    class="overlay">
 
-    <h1 id="winnerText"></h1>
 
     <img
         id="winnerImg"
-        alt="Winner image"
-    >
+        src=""
+        alt="Winner image">
 
-    <div id="imageFallback"></div>
+
+    <div id="imageError">
+
+        Victory image could not be loaded.
+        Check that the image filename is
+        exactly correct and is in the same
+        folder as index.html.
+
+    </div>
+
 
     <button
         class="restart"
         onclick="restartGame()">
+
         RESTART BATTLE
+
     </button>
+
 
 </div>
 
 
 <script>
 
-/* ============================================
+
+/* =========================================
    IMAGE FILES
+========================================= */
 
-   Put these files in the SAME folder
-   as this HTML file:
+/*
+   FIRST IMAGE YOU UPLOADED:
+   Sukuna victory image
 
-   gojo_win.jpg
-   sukuna_win.jpg
-============================================ */
+   SECOND IMAGE YOU UPLOADED:
+   Gojo victory image
 
-const GOJO_WIN_IMAGE = "gojo_win.jpg";
-const SUKUNA_WIN_IMAGE = "sukuna_win.jpg";
+   Keep these files in the SAME folder
+   as index.html.
+*/
+
+const GOJO_WIN_IMAGE =
+    "./gojo_win.jpg";
+
+const SUKUNA_WIN_IMAGE =
+    "./sukuna_win.jpg";
 
 
-/* ============================================
-   STATS
-============================================ */
+/* =========================================
+   GAME STATS
+========================================= */
 
 const MAX_GOJO_HP = 200;
+
 const MAX_SUKUNA_HP = 250;
 
-let gojo = MAX_GOJO_HP;
-let sukuna = MAX_SUKUNA_HP;
 
-let gameOver = false;
+let gojo =
+    MAX_GOJO_HP;
 
 
-/* ============================================
+let sukuna =
+    MAX_SUKUNA_HP;
+
+
+let gameOver =
+    false;
+
+
+/* =========================================
    COOLDOWNS
-============================================ */
+========================================= */
 
-const PURPLE_COOLDOWN = 18;
-
-const GOJO_DOMAIN_COOLDOWN = 28;
-
-const SUKUNA_DOMAIN_COOLDOWN = 28;
-
-let purpleCooldown = 0;
-
-let gojoDomainCooldown = 0;
-
-let sukunaDomainCooldown = 0;
+const PURPLE_COOLDOWN =
+    18;
 
 
-/* ============================================
-   AUDIO
-============================================ */
+const GOJO_DOMAIN_COOLDOWN =
+    28;
 
-let audioContext = null;
+
+const SUKUNA_DOMAIN_COOLDOWN =
+    28;
+
+
+let purpleCooldown =
+    0;
+
+
+let gojoDomainCooldown =
+    0;
+
+
+let sukunaDomainCooldown =
+    0;
+
+
+/* =========================================
+   DOMAIN CLASH VARIABLES
+========================================= */
+
+let clashActive =
+    false;
+
+
+let clashTimer =
+    5;
+
+
+let gojoClashPower =
+    0;
+
+
+let sukunaClashPower =
+    0;
+
+
+let clashInterval =
+    null;
+
+
+let clashTimerInterval =
+    null;
+
+
+/* =========================================
+   SOUND SYSTEM
+========================================= */
+
+let audioContext =
+    null;
+
 
 function startAudio() {
 
@@ -470,7 +931,11 @@ function startAudio() {
 
     }
 
-    if (audioContext.state === "suspended") {
+
+    if (
+        audioContext.state ===
+        "suspended"
+    ) {
 
         audioContext.resume();
 
@@ -483,11 +948,14 @@ function playSound(type) {
 
     startAudio();
 
+
     const oscillator =
         audioContext.createOscillator();
 
+
     const gain =
         audioContext.createGain();
+
 
     oscillator.connect(gain);
 
@@ -495,56 +963,84 @@ function playSound(type) {
         audioContext.destination
     );
 
-    let frequency = 300;
 
-    let duration = 0.15;
+    let frequency =
+        300;
+
+
+    let duration =
+        0.15;
 
 
     if (type === "hit") {
 
-        frequency = 180;
-        duration = 0.12;
+        frequency =
+            180;
+
+        duration =
+            0.12;
 
     }
+
 
     if (type === "blue") {
 
-        frequency = 600;
-        duration = 0.25;
+        frequency =
+            600;
+
+        duration =
+            0.25;
 
     }
+
 
     if (type === "red") {
 
-        frequency = 150;
-        duration = 0.25;
+        frequency =
+            150;
+
+        duration =
+            0.25;
 
     }
+
 
     if (type === "purple") {
 
-        frequency = 700;
-        duration = 0.4;
+        frequency =
+            700;
+
+        duration =
+            0.4;
 
     }
+
 
     if (type === "nuke") {
 
-        frequency = 70;
-        duration = 1;
+        frequency =
+            70;
+
+        duration =
+            1;
 
     }
 
+
     if (type === "domain") {
 
-        frequency = 90;
-        duration = 0.8;
+        frequency =
+            90;
+
+        duration =
+            0.8;
 
     }
 
 
     oscillator.frequency.value =
         frequency;
+
 
     oscillator.type =
         "sawtooth";
@@ -558,40 +1054,49 @@ function playSound(type) {
 
     gain.gain.exponentialRampToValueAtTime(
         0.001,
-        audioContext.currentTime + duration
+        audioContext.currentTime +
+        duration
     );
 
 
     oscillator.start();
 
+
     oscillator.stop(
-        audioContext.currentTime + duration
+        audioContext.currentTime +
+        duration
     );
 
 }
 
 
-/* ============================================
-   BARS
-============================================ */
+/* =========================================
+   UPDATE HP BARS
+========================================= */
 
 function updateBars() {
 
     document.getElementById(
         "gojoHP"
     ).style.width =
+
         Math.max(
             0,
-            gojo / MAX_GOJO_HP * 100
+            gojo /
+            MAX_GOJO_HP *
+            100
         ) + "%";
 
 
     document.getElementById(
         "sukunaHP"
     ).style.width =
+
         Math.max(
             0,
-            sukuna / MAX_SUKUNA_HP * 100
+            sukuna /
+            MAX_SUKUNA_HP *
+            100
         ) + "%";
 
 
@@ -600,25 +1105,39 @@ function updateBars() {
 }
 
 
-/* ============================================
+/* =========================================
    LOG
-============================================ */
+========================================= */
 
-function log(text, className = "") {
+function log(
+    text,
+    className = ""
+) {
 
     const box =
-        document.getElementById("log");
+        document.getElementById(
+            "log"
+        );
+
 
     const line =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
+
 
     line.className =
         className;
 
+
     line.innerHTML =
         text;
 
-    box.appendChild(line);
+
+    box.appendChild(
+        line
+    );
+
 
     box.scrollTop =
         box.scrollHeight;
@@ -626,17 +1145,24 @@ function log(text, className = "") {
 }
 
 
-/* ============================================
+/* =========================================
    DAMAGE NUMBERS
-============================================ */
+========================================= */
 
-function showDamage(amount, target) {
+function showDamage(
+    amount,
+    target
+) {
 
     const damage =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
+
 
     damage.className =
         "damage";
+
 
     damage.innerText =
         amount === 0
@@ -665,29 +1191,35 @@ function showDamage(amount, target) {
     );
 
 
-    setTimeout(() => {
+    setTimeout(
+        () => {
 
-        damage.remove();
+            damage.remove();
 
-    }, 900);
+        },
+        900
+    );
 
 }
 
 
-/* ============================================
+/* =========================================
    SCREEN SHAKE
-============================================ */
+========================================= */
 
 function shake() {
 
     const body =
         document.body;
 
+
     body.classList.remove(
         "shake"
     );
 
+
     void body.offsetWidth;
+
 
     body.classList.add(
         "shake"
@@ -696,9 +1228,9 @@ function shake() {
 }
 
 
-/* ============================================
+/* =========================================
    GOJO ATTACKS
-============================================ */
+========================================= */
 
 function attack(move) {
 
@@ -708,7 +1240,9 @@ function attack(move) {
         gojo <= 0 ||
         sukuna <= 0
     ) {
+
         return;
+
     }
 
 
@@ -729,13 +1263,18 @@ function attack(move) {
     let dmg;
 
 
-    /* ========================================
+    /* =====================================
        HOLLOW PURPLE
-    ======================================== */
+    ===================================== */
 
-    if (move === "Purple") {
+    if (
+        move === "Purple"
+    ) {
 
-        if (purpleCooldown > 0) {
+
+        if (
+            purpleCooldown > 0
+        ) {
 
             log(
                 "Hollow Purple is still on cooldown.",
@@ -752,8 +1291,10 @@ function attack(move) {
 
 
         /*
-           BELOW 25% HP
-           = HOLLOW NUKE
+           HOLLOW NUKE
+
+           Activated when Gojo has
+           25% HP or less.
         */
 
         if (
@@ -761,9 +1302,14 @@ function attack(move) {
             MAX_GOJO_HP * 0.25
         ) {
 
-            dmg = 75;
+            dmg =
+                75;
 
-            playSound("nuke");
+
+            playSound(
+                "nuke"
+            );
+
 
             log(
                 "GOJO USED HOLLOW NUKE.",
@@ -772,16 +1318,21 @@ function attack(move) {
 
         }
 
+
         /*
-           ABOVE 25%
-           = NORMAL PURPLE
+           NORMAL HOLLOW PURPLE
         */
 
         else {
 
-            dmg = 35;
+            dmg =
+                35;
 
-            playSound("purple");
+
+            playSound(
+                "purple"
+            );
+
 
             log(
                 "GOJO USED HOLLOW PURPLE.",
@@ -792,44 +1343,62 @@ function attack(move) {
 
     }
 
+
     else {
 
         dmg =
             attacks[move];
 
 
-        if (move === "Blue") {
+        if (
+            move === "Blue"
+        ) {
 
-            playSound("blue");
+            playSound(
+                "blue"
+            );
 
         }
 
-        else if (move === "Red") {
+        else if (
+            move === "Red"
+        ) {
 
-            playSound("red");
+            playSound(
+                "red"
+            );
 
         }
 
         else {
 
-            playSound("hit");
+            playSound(
+                "hit"
+            );
 
         }
 
     }
 
 
-    /* ========================================
-       SUKUNA DODGE
-    ======================================== */
+    /* =====================================
+       GOJO ATTACK ACCURACY
+
+       10% MISS
+       12% PARTIAL BLOCK
+    ===================================== */
 
     const dodge =
         Math.random();
 
 
-    if (dodge < 0.20) {
+    if (
+        dodge < 0.10
+    ) {
 
-        dmg = 0;
+        dmg =
+            0;
+
 
         log(
             "Sukuna dodged " +
@@ -839,12 +1408,16 @@ function attack(move) {
 
     }
 
-    else if (dodge < 0.38) {
+
+    else if (
+        dodge < 0.22
+    ) {
 
         dmg =
             Math.round(
                 dmg * 0.5
             );
+
 
         log(
             "Sukuna partially blocked " +
@@ -853,6 +1426,11 @@ function attack(move) {
         );
 
     }
+
+
+    /*
+       Small critical chance.
+    */
 
     else if (
         Math.random() < 0.10
@@ -863,6 +1441,7 @@ function attack(move) {
                 dmg * 1.5
             );
 
+
         log(
             "CRITICAL HIT.",
             "gojoText"
@@ -871,7 +1450,9 @@ function attack(move) {
     }
 
 
-    sukuna -= dmg;
+    sukuna -=
+        dmg;
+
 
     sukuna =
         Math.max(
@@ -901,6 +1482,7 @@ function attack(move) {
 
     updateBars();
 
+
     checkWin();
 
 
@@ -916,9 +1498,9 @@ function attack(move) {
 }
 
 
-/* ============================================
+/* =========================================
    GOJO DOMAIN
-============================================ */
+========================================= */
 
 function gojoDomain() {
 
@@ -926,7 +1508,9 @@ function gojoDomain() {
         gameOver ||
         clashActive
     ) {
+
         return;
+
     }
 
 
@@ -948,7 +1532,9 @@ function gojoDomain() {
         GOJO_DOMAIN_COOLDOWN;
 
 
-    playSound("domain");
+    playSound(
+        "domain"
+    );
 
 
     const choice =
@@ -956,8 +1542,8 @@ function gojoDomain() {
 
 
     /*
-       35% chance Sukuna
-       counters with his domain.
+       35% chance Sukuna responds
+       with Malevolent Shrine.
     */
 
     if (
@@ -977,17 +1563,20 @@ function gojoDomain() {
 
         startDomainClash();
 
+
         return;
 
     }
 
 
     /*
-       13% chance Gojo's
-       domain fails to form.
+       13% chance the domain
+       fails to fully form.
     */
 
-    if (choice < 0.48) {
+    if (
+        choice < 0.48
+    ) {
 
         log(
             "GOJO ATTEMPTED UNLIMITED VOID, BUT THE DOMAIN DID NOT FULLY FORM.",
@@ -1010,13 +1599,15 @@ function gojoDomain() {
 
 
     /*
-       Successful domain.
+       Successful Unlimited Void.
     */
 
-    const dmg = 50;
+    const dmg =
+        50;
 
 
-    sukuna -= dmg;
+    sukuna -=
+        dmg;
 
 
     sukuna =
@@ -1042,6 +1633,7 @@ function gojoDomain() {
 
     updateBars();
 
+
     checkWin();
 
 
@@ -1057,9 +1649,9 @@ function gojoDomain() {
 }
 
 
-/* ============================================
+/* =========================================
    SUKUNA DOMAIN
-============================================ */
+========================================= */
 
 function sukunaDomain() {
 
@@ -1069,7 +1661,9 @@ function sukunaDomain() {
         sukuna <= 0 ||
         gojo <= 0
     ) {
+
         return;
+
     }
 
 
@@ -1088,12 +1682,15 @@ function sukunaDomain() {
         SUKUNA_DOMAIN_COOLDOWN;
 
 
-    playSound("domain");
+    playSound(
+        "domain"
+    );
 
 
     /*
-       Sukuna can choose NOT
-       to use his domain.
+       Sukuna has a 35% chance
+       to decide NOT to use
+       his domain.
     */
 
     if (
@@ -1108,14 +1705,15 @@ function sukunaDomain() {
 
         enemyTurn();
 
+
         return;
 
     }
 
 
     /*
-       Gojo can answer with
-       Unlimited Void.
+       If Gojo's domain is ready,
+       Sukuna may trigger a clash.
     */
 
     if (
@@ -1135,14 +1733,15 @@ function sukunaDomain() {
 
         startDomainClash();
 
+
         return;
 
     }
 
 
     /*
-       Chance Sukuna's domain
-       fails to form.
+       Chance of Sukuna's domain
+       failing.
     */
 
     if (
@@ -1160,10 +1759,16 @@ function sukunaDomain() {
     }
 
 
-    const dmg = 45;
+    /*
+       Successful Malevolent Shrine.
+    */
+
+    const dmg =
+        45;
 
 
-    gojo -= dmg;
+    gojo -=
+        dmg;
 
 
     gojo =
@@ -1189,14 +1794,15 @@ function sukunaDomain() {
 
     updateBars();
 
+
     checkWin();
 
 }
 
 
-/* ============================================
+/* =========================================
    SUKUNA AI
-============================================ */
+========================================= */
 
 function enemyTurn() {
 
@@ -1206,13 +1812,15 @@ function enemyTurn() {
         sukuna <= 0 ||
         gojo <= 0
     ) {
+
         return;
+
     }
 
 
     /*
-       Sukuna gets a chance to use
-       his domain every enemy turn.
+       Chance for Sukuna to
+       attempt his domain.
     */
 
     if (
@@ -1221,6 +1829,7 @@ function enemyTurn() {
     ) {
 
         sukunaDomain();
+
 
         return;
 
@@ -1257,7 +1866,7 @@ function enemyTurn() {
 
     /*
        Sukuna becomes more aggressive
-       when Gojo is low.
+       when Gojo has low HP.
     */
 
     if (
@@ -1286,15 +1895,20 @@ function enemyTurn() {
         move.dmg;
 
 
-    /*
-       Gojo dodge.
-    */
+    /* =====================================
+       SUKUNA ACCURACY
+
+       10% MISS
+       12% PARTIAL AVOID
+    ===================================== */
 
     if (
-        Math.random() < 0.15
+        Math.random() < 0.10
     ) {
 
-        dmg = 0;
+        dmg =
+            0;
+
 
         log(
             "Gojo dodged " +
@@ -1305,8 +1919,29 @@ function enemyTurn() {
 
     }
 
+
+    else if (
+        Math.random() < 0.12
+    ) {
+
+        dmg =
+            Math.round(
+                dmg * 0.5
+            );
+
+
+        log(
+            "Gojo partially avoided " +
+            move.name +
+            ".",
+            "gojoText"
+        );
+
+    }
+
+
     /*
-       Sukuna critical.
+       Sukuna critical hit.
     */
 
     else if (
@@ -1318,6 +1953,7 @@ function enemyTurn() {
                 dmg * 1.5
             );
 
+
         log(
             "SUKUNA CRITICAL HIT.",
             "sukunaText"
@@ -1326,7 +1962,8 @@ function enemyTurn() {
     }
 
 
-    gojo -= dmg;
+    gojo -=
+        dmg;
 
 
     gojo =
@@ -1342,7 +1979,9 @@ function enemyTurn() {
     );
 
 
-    playSound("hit");
+    playSound(
+        "hit"
+    );
 
 
     log(
@@ -1357,43 +1996,39 @@ function enemyTurn() {
 
     updateBars();
 
+
     checkWin();
 
 }
 
 
-/* ============================================
+/* =========================================
    DOMAIN CLASH
-============================================ */
-
-let clashActive = false;
-
-let clashTimer = 5;
-
-let gojoClashPower = 0;
-
-let sukunaClashPower = 0;
-
-let clashInterval = null;
-
-let clashTimerInterval = null;
-
+========================================= */
 
 function startDomainClash() {
 
     if (gameOver) {
+
         return;
+
     }
 
 
-    clashActive = true;
+    clashActive =
+        true;
 
 
-    clashTimer = 5;
+    clashTimer =
+        5;
 
-    gojoClashPower = 0;
 
-    sukunaClashPower = 0;
+    gojoClashPower =
+        0;
+
+
+    sukunaClashPower =
+        0;
 
 
     document.getElementById(
@@ -1420,27 +2055,25 @@ function startDomainClash() {
         "flex";
 
 
-    log(
-        "DOMAIN CLASH. PRESS SPACE AS FAST AS POSSIBLE.",
-        "specialText"
-    );
-
-
     /*
-       SUKUNA AI FIGHTS BACK.
-
-       It gets progress every
-       100 milliseconds.
+       Sukuna actively fights
+       the Space-bar battle.
     */
 
     clashInterval =
         setInterval(
-            () => {
+            function() {
 
                 if (!clashActive) {
+
                     return;
+
                 }
 
+
+                /*
+                   Sukuna's progress.
+                */
 
                 sukunaClashPower +=
                     1.1 +
@@ -1455,7 +2088,8 @@ function startDomainClash() {
                     Math.random() < 0.08
                 ) {
 
-                    sukunaClashPower += 3;
+                    sukunaClashPower +=
+                        3;
 
                 }
 
@@ -1470,7 +2104,8 @@ function startDomainClash() {
                 document.getElementById(
                     "sukunaClashBar"
                 ).style.width =
-                    sukunaClashPower + "%";
+                    sukunaClashPower +
+                    "%";
 
 
                 if (
@@ -1489,15 +2124,17 @@ function startDomainClash() {
 
 
     /*
-       Five-second timer.
+       Five-second countdown.
     */
 
     clashTimerInterval =
         setInterval(
-            () => {
+            function() {
 
                 if (!clashActive) {
+
                     return;
+
                 }
 
 
@@ -1525,9 +2162,9 @@ function startDomainClash() {
 }
 
 
-/* ============================================
-   SPACE BAR
-============================================ */
+/* =========================================
+   SPACE BAR DOMAIN CLASH
+========================================= */
 
 document.addEventListener(
     "keydown",
@@ -1537,7 +2174,9 @@ document.addEventListener(
             event.code !== "Space" ||
             !clashActive
         ) {
+
             return;
+
         }
 
 
@@ -1545,8 +2184,8 @@ document.addEventListener(
 
 
         /*
-           Each SPACE gives Gojo
-           progress.
+           Every SPACE press
+           increases Gojo's bar.
         */
 
         gojoClashPower +=
@@ -1564,12 +2203,13 @@ document.addEventListener(
         document.getElementById(
             "gojoClashBar"
         ).style.width =
-            gojoClashPower + "%";
+            gojoClashPower +
+            "%";
 
 
         /*
-           Gojo wins immediately
-           if he fills the bar.
+           Gojo immediately wins
+           if his bar reaches 100.
         */
 
         if (
@@ -1586,20 +2226,23 @@ document.addEventListener(
 );
 
 
-/* ============================================
+/* =========================================
    END DOMAIN CLASH
-============================================ */
+========================================= */
 
 function endDomainClash(
     forcedWinner = null
 ) {
 
     if (!clashActive) {
+
         return;
+
     }
 
 
-    clashActive = false;
+    clashActive =
+        false;
 
 
     clearInterval(
@@ -1647,17 +2290,19 @@ function endDomainClash(
 
 
     /*
-       GOJO WINS CLASH
+       GOJO WINS THE CLASH
     */
 
     if (
         winner === "Gojo"
     ) {
 
-        const dmg = 60;
+        const dmg =
+            60;
 
 
-        sukuna -= dmg;
+        sukuna -=
+            dmg;
 
 
         sukuna =
@@ -1682,16 +2327,19 @@ function endDomainClash(
 
     }
 
+
     /*
-       SUKUNA WINS CLASH
+       SUKUNA WINS THE CLASH
     */
 
     else {
 
-        const dmg = 55;
+        const dmg =
+            55;
 
 
-        gojo -= dmg;
+        gojo -=
+            dmg;
 
 
         gojo =
@@ -1719,46 +2367,77 @@ function endDomainClash(
 
     updateBars();
 
+
     checkWin();
 
 }
 
 
-/* ============================================
-   WIN SYSTEM
-============================================ */
+/* =========================================
+   WIN CHECK
+========================================= */
 
 function checkWin() {
 
     if (gameOver) {
-        return;
-    }
-
-
-    if (sukuna <= 0) {
-
-        sukuna = 0;
-
-        gameOver = true;
-
-        updateBars();
-
-        showWin("Gojo");
 
         return;
 
     }
 
 
-    if (gojo <= 0) {
+    /*
+       GOJO WINS
+    */
 
-        gojo = 0;
+    if (
+        sukuna <= 0
+    ) {
 
-        gameOver = true;
+        sukuna =
+            0;
+
+
+        gameOver =
+            true;
+
 
         updateBars();
 
-        showWin("Sukuna");
+
+        showWin(
+            "Gojo"
+        );
+
+
+        return;
+
+    }
+
+
+    /*
+       SUKUNA WINS
+    */
+
+    if (
+        gojo <= 0
+    ) {
+
+        gojo =
+            0;
+
+
+        gameOver =
+            true;
+
+
+        updateBars();
+
+
+        showWin(
+            "Sukuna"
+        );
+
 
         return;
 
@@ -1767,9 +2446,9 @@ function checkWin() {
 }
 
 
-/* ============================================
-   WIN SCREEN / IMAGE FIX
-============================================ */
+/* =========================================
+   SHOW WIN IMAGE
+========================================= */
 
 function showWin(winner) {
 
@@ -1779,56 +2458,60 @@ function showWin(winner) {
         );
 
 
-    const text =
-        document.getElementById(
-            "winnerText"
-        );
-
-
     const image =
         document.getElementById(
             "winnerImg"
         );
 
 
-    const fallback =
+    const error =
         document.getElementById(
-            "imageFallback"
+            "imageError"
         );
 
 
-    screen.style.display =
-        "flex";
-
-
-    text.innerText =
-        winner === "Gojo"
-        ? "GOJO WINS"
-        : "SUKUNA WINS";
-
-
-    const imagePath =
-        winner === "Gojo"
-        ? GOJO_WIN_IMAGE
-        : SUKUNA_WIN_IMAGE;
-
-
     /*
-       Hide everything first.
+       Reset image state.
     */
 
     image.style.display =
         "none";
 
 
-    fallback.style.display =
+    error.style.display =
         "none";
 
 
     /*
+       Choose the correct image.
+    */
+
+    let imagePath;
+
+
+    if (
+        winner === "Gojo"
+    ) {
+
+        imagePath =
+            GOJO_WIN_IMAGE;
+
+    }
+
+    else {
+
+        imagePath =
+            SUKUNA_WIN_IMAGE;
+
+    }
+
+
+    /*
        IMPORTANT:
-       Set the event handlers BEFORE
-       setting src.
+
+       The onload and onerror
+       handlers are created BEFORE
+       setting image.src.
     */
 
     image.onload =
@@ -1837,7 +2520,7 @@ function showWin(winner) {
             image.style.display =
                 "block";
 
-            fallback.style.display =
+            error.style.display =
                 "none";
 
         };
@@ -1846,38 +2529,42 @@ function showWin(winner) {
     image.onerror =
         function() {
 
-            /*
-               If the image can't be found,
-               the win screen STILL works.
-            */
-
             image.style.display =
                 "none";
 
-
-            fallback.style.display =
-                "flex";
-
-
-            fallback.innerText =
-                winner === "Gojo"
-                ? "GOJO WINS"
-                : "SUKUNA WINS";
+            error.style.display =
+                "block";
 
         };
 
 
+    /*
+       Load the victory image.
+    */
+
     image.src =
         imagePath;
+
+
+    /*
+       Show the win screen.
+    */
+
+    screen.style.display =
+        "flex";
 
 }
 
 
-/* ============================================
-   RESTART
-============================================ */
+/* =========================================
+   RESTART GAME
+========================================= */
 
 function restartGame() {
+
+    /*
+       Reset HP.
+    */
 
     gojo =
         MAX_GOJO_HP;
@@ -1886,6 +2573,10 @@ function restartGame() {
     sukuna =
         MAX_SUKUNA_HP;
 
+
+    /*
+       Reset cooldowns.
+    */
 
     purpleCooldown =
         0;
@@ -1899,6 +2590,10 @@ function restartGame() {
         0;
 
 
+    /*
+       Reset game state.
+    */
+
     gameOver =
         false;
 
@@ -1906,6 +2601,10 @@ function restartGame() {
     clashActive =
         false;
 
+
+    /*
+       Stop domain timers.
+    */
 
     clearInterval(
         clashInterval
@@ -1916,6 +2615,10 @@ function restartGame() {
         clashTimerInterval
     );
 
+
+    /*
+       Hide screens.
+    */
 
     document.getElementById(
         "winScreen"
@@ -1929,6 +2632,10 @@ function restartGame() {
         "none";
 
 
+    /*
+       Reset image.
+    */
+
     document.getElementById(
         "winnerImg"
     ).style.display =
@@ -1936,16 +2643,30 @@ function restartGame() {
 
 
     document.getElementById(
-        "imageFallback"
+        "winnerImg"
+    ).src =
+        "";
+
+
+    document.getElementById(
+        "imageError"
     ).style.display =
         "none";
 
+
+    /*
+       Clear log.
+    */
 
     document.getElementById(
         "log"
     ).innerHTML =
         "";
 
+
+    /*
+       Update everything.
+    */
 
     updateBars();
 
@@ -1958,9 +2679,9 @@ function restartGame() {
 }
 
 
-/* ============================================
+/* =========================================
    COOLDOWN DISPLAY
-============================================ */
+========================================= */
 
 function updateCooldowns() {
 
@@ -1975,6 +2696,11 @@ function updateCooldowns() {
             "domainButton"
         );
 
+
+    /*
+       Disable buttons while
+       they are on cooldown.
+    */
 
     purpleButton.disabled =
         purpleCooldown > 0 ||
@@ -2009,17 +2735,19 @@ function updateCooldowns() {
     document.getElementById(
         "cooldowns"
     ).innerText =
+
         "Hollow Purple: " +
         purpleText +
+
         " | Unlimited Void: " +
         gojoDomainText +
+
         " | Malevolent Shrine: " +
         sukunaDomainText;
 
 
     /*
-       Change description when Gojo
-       falls below 25%.
+       Purple status.
     */
 
     if (
@@ -2030,7 +2758,8 @@ function updateCooldowns() {
         document.getElementById(
             "purpleStatus"
         ).innerText =
-            "Gojo is below 25% HP: Hollow Purple becomes HOLLOW NUKE.";
+
+            "Gojo is at or below 25% HP: Hollow Purple becomes HOLLOW NUKE.";
 
     }
 
@@ -2039,38 +2768,45 @@ function updateCooldowns() {
         document.getElementById(
             "purpleStatus"
         ).innerText =
-            "Gojo is above 25% HP: Hollow Purple uses its normal form.";
+
+            "Gojo is above 25% HP: Hollow Purple is in its normal form.";
 
     }
 
 }
 
 
-/* ============================================
+/* =========================================
    COOLDOWN TIMER
-============================================ */
+========================================= */
 
 setInterval(
-    () => {
+    function() {
 
         if (
             purpleCooldown > 0
         ) {
+
             purpleCooldown--;
+
         }
 
 
         if (
             gojoDomainCooldown > 0
         ) {
+
             gojoDomainCooldown--;
+
         }
 
 
         if (
             sukunaDomainCooldown > 0
         ) {
+
             sukunaDomainCooldown--;
+
         }
 
 
@@ -2081,18 +2817,21 @@ setInterval(
 );
 
 
-/* ============================================
-   START
-============================================ */
+/* =========================================
+   INITIALIZE GAME
+========================================= */
 
 updateBars();
+
 
 log(
     "THE BATTLE BEGINS.",
     "specialText"
 );
 
+
 </script>
 
 </body>
+
 </html>
